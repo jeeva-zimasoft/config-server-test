@@ -1,0 +1,57 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+  cloud:
+    config:
+      import-check:
+        enabled: false
+
+database:
+  name: 'testingfdfg'
+  host: 'test'
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 
+          - env
+          - configprops
+          - health
+          - refresh
+  endpoint:
+    env:
+      show-values: ALWAYS
+    configprops:
+      show-values: ALWAYS
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      getCountriesCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 60s
+        permittedNumberOfCallsInHalfOpenState: 3
+        eventConsumerBufferSize: 10
+  ratelimiter:
+    instances:
+      getCountriesRateLimiter:
+        limitForPeriod: 2          # Max 5 calls allowed
+        limitRefreshPeriod: 60s    # Refresh limit every 10 sec
+        timeoutDuration: 1s        # Wait max 2 sec if limit exceeded
+        registerHealthIndicator: true
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
